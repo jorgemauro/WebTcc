@@ -3,6 +3,7 @@ import {
     TextField,
     Typography,
     Card,
+    CardHeader,
     Dialog,
     DialogContent,
     DialogTitle,
@@ -78,13 +79,19 @@ class Perguntas extends Component {
             <Card style={{padding:'2% 5%'}}>
                 <Typography variant="headline" component="h2">Questões</Typography>
                 <form onSubmit={this.submit}>
-                    {this.state.perguntas.map((p, index) => <TextField key={index}
-                                                                       className="input-field"
-                                                                       type="text"
-                                                                       value={this.state.resp[index]}
-                                                                       label={p}
-                                                                       required
-                                                                       onChange={this.handleChangeResp(index)}/>)
+                    {this.state.perguntas.map((p, index) =>{
+                        console.log(p);
+                        return<Card>
+                        <CardHeader title={p.pergunta}/>
+                        {/*<TextField key={index}*/}
+                                                                       {/*className="input-field"*/}
+                                                                       {/*type="text"*/}
+                                                                       {/*value={this.state.resp[index]}*/}
+                                                                       {/*label={p}*/}
+                                                                       {/*required*/}
+                                                                       {/*onChange={this.handleChangeResp(index)}/>*/}
+                    </Card>
+                    })
                     }
                     <Button type="submit"
                             style={{marginTop: '20px', display: 'inline-block'}}>
