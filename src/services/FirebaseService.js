@@ -16,6 +16,11 @@ export default class FirebaseService {
         return query;
     };
 
+    static pushNewUser = (node, idAuth ,objToSubmit) => {
+        const ref = firebaseDatabase.ref(node+'/'+idAuth).update(objToSubmit);
+        return idAuth;
+    };
+
     static pushData = (node, objToSubmit) => {
         const ref = firebaseDatabase.ref(node).push();
         const id = firebaseDatabase.ref(node).push().key;
@@ -28,10 +33,11 @@ export default class FirebaseService {
     };
 
     static getUniqueDataBy = (node, id, callback) => {
+
         const ref = firebaseDatabase.ref(node + '/' + id);
+        console.log(node + '/' + id);
         let newData = {};
         ref.once('value', (dataSnapshot) => {
-
             if (!dataSnapshot || dataSnapshot === undefined || !dataSnapshot.val() || dataSnapshot.val() === undefined) {
                 callback(null);
                 return;

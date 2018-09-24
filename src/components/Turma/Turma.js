@@ -125,6 +125,7 @@ class Turma extends Component {
     };
     openMessage=()=>{this.setState({propsOpenSnack:false})};
     render = () => {
+        console.log(this.props);
         return (this.props.verify?<React.Fragment>
 
             <Typography variant="headline" component="h2">Turma</Typography>

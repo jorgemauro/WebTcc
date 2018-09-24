@@ -18,7 +18,8 @@ class Login extends Component {
         FirebaseService.login(email, password)
             .then((resp) => {
                 this.props.getId(resp.uid);
-                this.props.history.push(urls.home.path);
+                console.log(resp);
+                //this.props.history.push(urls.home.path);
             })
             .catch(error => {
                 alert(error.message);

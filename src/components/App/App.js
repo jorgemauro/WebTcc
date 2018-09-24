@@ -58,8 +58,6 @@ class App extends Component {
 
                     <TopBar/>
 
-                    <Card style={{margin: '50px'}}>
-                        <CardContent>
                             <Route exact path={urls.login.path}
                                    render={(props) =>
                                        <NavigationLoggedWrapper component={Login} getId={(resp)=>{this.setState({userId:resp})}} {...props}/>}
@@ -84,34 +82,41 @@ class App extends Component {
                                    render={(props) =>
                                        <NavigationWrapper component={DataTable}
                                                           {...props}
+                                                          verify={this.state.tipoUser}
                                                           data={this.state.data}
                                        />}
                             />
                             <Route exact path={urls.add.path}
                                    render={(props) =>
-                                       <NavigationWrapper component={Add} {...props}/>}
+                                       <NavigationWrapper component={Add}
+                                                          verify={this.state.tipoUser}
+                                                          {...props}/>}
                             />
                             <Route exact path={privateUrls.edit.path}
                                    render={(props) =>
-                                       <NavigationWrapper component={Add} {...props}/>}
+                                       <NavigationWrapper component={Add}
+
+                                                          verify={this.state.tipoUser}
+                                                          {...props}/>}
                             />
 
                             <Route exact path={urls.turma.path}
                                    render={(props) =>
-                                       <NavigationWrapper component={Turma} {...props}/>}
+                                       <NavigationWrapper component={Turma}
+                                                          verify={this.state.tipoUser}
+                                                          {...props}/>}
                             />
                             <Route exact path={privateUrls.turmaEdit.path}
                                    render={(props) =>
-                                       <NavigationWrapper component={Turma} {...props}/>}
+                                       <NavigationWrapper component={Turma}
+                                                          verify={this.state.tipoUser}
+                                                          {...props}/>}
                             />
 
                             <Route exact path={privateUrls.perguntas.path}
                                    render={(props) =>
                                        <NavigationWrapper component={Perguntas} {...props}/>}
                             />
-                        </CardContent>
-                    </Card>
-
                 </React.Fragment>
             </MuiThemeProvider>
         );

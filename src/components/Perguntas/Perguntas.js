@@ -22,8 +22,8 @@ class Perguntas extends Component {
     state = {id: null, idTurma: '', perguntas: [], aluno: '', forum: '', perguntaTemp: '', openDialog: false, resp: []};
     componentWillMount = () => {
         const {id} = this.props.match.params;
-        this.setState({idTurma:id})
-        if(id){
+        this.setState({idTurma: id});
+        if (id) {
             FirebaseService.getUniqueDataBy('classes', id, (data) => this.setState({perguntas: data.perguntas}))
         }
         let resp = [];
@@ -33,7 +33,16 @@ class Perguntas extends Component {
         this.setState({resp: resp});
         FirebaseService.getUniqueDataBy('forum', this.state.idTurma, (data) => this.setState({...data}));
     };
+    compare=()=>{
 
+    };
+    registraResp=(resp)=>{
+        console.log(resp);
+    };
+    shuffle = (o) => {
+        for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+    };
     submit = (event) => {
         event.preventDefault();
 
@@ -69,28 +78,45 @@ class Perguntas extends Component {
     handleCloseDialog = () => {
         this.setState({openDialog: false})
     };
-    handleChangeResp=index=>event=>{
-        let resp=this.state.resp;
-        resp[index]=event.target.value;
-        this.setState({resp:resp});
+    handleChangeResp = index => event => {
+        let resp = this.state.resp;
+        resp[index] = event.target.value;
+        this.setState({resp: resp});
     };
     render = () => {
         return (<React.Fragment>
-            <Card style={{padding:'2% 5%'}}>
+            <Card style={{padding: '2% 5%'}}>
                 <Typography variant="headline" component="h2">Questões</Typography>
                 <form onSubmit={this.submit}>
-                    {this.state.perguntas.map((p, index) =>{
-                        console.log(p);
-                        return<Card>
-                        <CardHeader title={p.pergunta}/>
-                        {/*<TextField key={index}*/}
-                                                                       {/*className="input-field"*/}
-                                                                       {/*type="text"*/}
-                                                                       {/*value={this.state.resp[index]}*/}
-                                                                       {/*label={p}*/}
-                                                                       {/*required*/}
-                                                                       {/*onChange={this.handleChangeResp(index)}/>*/}
-                    </Card>
+                    {this.state.perguntas.map((p, index) => {
+                        let arrayObject=[];
+                        let arrayResp = [];
+                        p.respostas.forEach((x,i)=>{
+                            if(i===p.rAns.split('/')[0]){
+                                arrayResp.push({i:i,q:x});
+                            }else {
+                                arrayObject.push({i: i, q: x});
+                            }
+                        });
+                        let countRespView = p.vAns;
+                        arrayObject=this.shuffle(arrayObject);
+                        for(let i=0;i<countRespView;i++){
+                            arrayResp.push(arrayObject[i]);
+                        }
+                        arrayResp=this.shuffle(arrayResp);
+                        console.log(arrayResp);
+                        return <Card key={index}>
+                            <CardHeader title={p.pergunta}/>
+                            <CardContent>
+                                <List>
+                                    {arrayResp.map((resp,idx)=>
+                                        <ListItem key={index+"r"+idx} button OnClick={()=>this.registraResp(resp.i)}>
+                                            {resp.q}
+                                        </ListItem>)
+                                    }
+                                </List>
+                            </CardContent>
+                        </Card>
                     })
                     }
                     <Button type="submit"
@@ -99,9 +125,9 @@ class Perguntas extends Component {
                     </Button>
                 </form>
             </Card>
-            <Card  style={{padding:'2% 5%', marginTop:'1%', backgroundColor:'#ffb01e', height:'20vh'}}>
+            <Card style={{padding: '2% 5%', marginTop: '1%', backgroundColor: '#ffb01e', height: '20vh'}}>
                 <Typography variant="headline" component="h2">Forum da turma</Typography>
-                <Card style={{backgroundColor:'#c78100', height:'15vh', padding:'2% 5%'}}>
+                <Card style={{backgroundColor: '#c78100', height: '15vh', padding: '2% 5%'}}>
                     <div><b>Usuario1:</b>Mensagem</div>
                 </Card>
             </Card>

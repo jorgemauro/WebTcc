@@ -48,7 +48,7 @@ class Signup extends Component {
                     admin:0,
                     uid:user.uid
                 };
-                FirebaseService.pushData('users',objToSubmit);
+                FirebaseService.pushNewUser('users',user.uid, objToSubmit);
                 this.props.history.push(urls.home.path);
             }
         ).catch(
