@@ -41,6 +41,7 @@ class Perguntas extends Component {
                 });
                 return this.setState({perguntas: perguntasDefinitivas})
             });
+            FirebaseService.getUniqueDataBy('respostas/'+id,this.props.userId,(data)=>this.setState({resp:data}))
         }
         FirebaseService.getUniqueDataBy('forum', this.state.idTurma, (data) =>{ this.setState({...data})});
     };
@@ -110,9 +111,6 @@ class Perguntas extends Component {
                             <CardContent>
                                 <List>
                                     {p.respostasView.map((resp,idx)=>{
-                                        console.log(idx);
-                                        console.log(this.state.selectAns[index]);
-                                        console.log(this.state.selectAns[index]===idx);
                                         return <ListItem selected={this.state.selectAns[index]===idx} key={index+"r"+idx} button onClick={()=>this.registraResp(index,resp.i,idx)}>
                                             {resp.q}
                                         </ListItem>})
