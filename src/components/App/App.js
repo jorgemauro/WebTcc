@@ -115,7 +115,9 @@ class App extends Component {
 
                             <Route exact path={privateUrls.perguntas.path}
                                    render={(props) =>
-                                       <NavigationWrapper component={Perguntas} {...props}/>}
+                                       <NavigationWrapper component={Perguntas}
+                                                          userId={this.props.userId}
+                                                          {...props}/>}
                             />
                 </React.Fragment>
             </MuiThemeProvider>

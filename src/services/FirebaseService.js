@@ -20,6 +20,9 @@ export default class FirebaseService {
         const ref = firebaseDatabase.ref(node+'/'+idAuth).update(objToSubmit);
         return idAuth;
     };
+    static pushNewResp = (node,idTurma ,objToSubmit) => {
+        firebaseDatabase.ref(node+'/'+idTurma).update(objToSubmit)
+    };
 
     static pushData = (node, objToSubmit) => {
         const ref = firebaseDatabase.ref(node).push();

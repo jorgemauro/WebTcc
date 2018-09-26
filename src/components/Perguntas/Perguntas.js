@@ -1,43 +1,55 @@
 import {
     Button,
-    TextField,
     Typography,
     Card,
     CardHeader,
-    Dialog,
-    DialogContent,
-    DialogTitle,
     CardContent,
-    List,
-    ListItem,
-    ListItemText
 } from "material-ui";
+import {
+    List,
+    ListItem,} from '@material-ui/core'
 import React, {Component} from "react";
 import FirebaseService from "../../services/FirebaseService";
-import {urls} from "../../utils/urlUtils";
 import {withRouter} from "react-router-dom";
 
 
 class Perguntas extends Component {
-    state = {id: null, idTurma: '', perguntas: [], aluno: '', forum: '', perguntaTemp: '', openDialog: false, resp: []};
+    state = {id: null, idTurma: '', perguntas: [], aluno: '', forum: '', perguntaTemp: '', openDialog: false, resp: [], selectAns:[]};
     componentWillMount = () => {
         const {id} = this.props.match.params;
         this.setState({idTurma: id});
         if (id) {
-            FirebaseService.getUniqueDataBy('classes', id, (data) => this.setState({perguntas: data.perguntas}))
+            FirebaseService.getUniqueDataBy('classes', id, (data) => {
+                let perguntasDefinitivas = data.perguntas;
+                perguntasDefinitivas.forEach((p, index) => {
+                    let arrayObject=[];
+                    let arrayResp = [];
+                    p.respostas.forEach((x,i)=>{
+                        if(i===p.rAns.split('/')[0]){
+                            arrayResp.push({i:i,q:x});
+                        }else {
+                            arrayObject.push({i: i, q: x});
+                        }
+                    });
+                    let countRespView = p.vAns;
+                    arrayObject=this.shuffle(arrayObject);
+                    for(let i=0;i<countRespView;i++){
+                        arrayResp.push(arrayObject[i]);
+                    }
+                    arrayResp=this.shuffle(arrayResp);
+                    perguntasDefinitivas[index]={...p,respostasView:arrayResp}
+                });
+                return this.setState({perguntas: perguntasDefinitivas})
+            });
         }
-        let resp = [];
-        this.state.perguntas.forEach((p) => {
-            resp.push('')
-        });
-        this.setState({resp: resp});
-        FirebaseService.getUniqueDataBy('forum', this.state.idTurma, (data) => this.setState({...data}));
+        FirebaseService.getUniqueDataBy('forum', this.state.idTurma, (data) =>{ this.setState({...data})});
     };
-    compare=()=>{
-
-    };
-    registraResp=(resp)=>{
-        console.log(resp);
+    registraResp=(idx, resp,i)=>{
+        let resp1=this.state.resp;
+        let selectAns=this.state.selectAns;
+        selectAns[idx]=i;
+        resp1[idx]=resp+'/'+idx;
+        this.setState({selectAns:selectAns});
     };
     shuffle = (o) => {
         for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
@@ -83,36 +95,27 @@ class Perguntas extends Component {
         resp[index] = event.target.value;
         this.setState({resp: resp});
     };
+    saveAns = ()=>{
+        let keyUser=this.props.userId;
+        FirebaseService.pushNewResp('respostas',this.state.idTurma,{[keyUser]:this.state.resp});
+    };
     render = () => {
         return (<React.Fragment>
             <Card style={{padding: '2% 5%'}}>
                 <Typography variant="headline" component="h2">Questões</Typography>
                 <form onSubmit={this.submit}>
                     {this.state.perguntas.map((p, index) => {
-                        let arrayObject=[];
-                        let arrayResp = [];
-                        p.respostas.forEach((x,i)=>{
-                            if(i===p.rAns.split('/')[0]){
-                                arrayResp.push({i:i,q:x});
-                            }else {
-                                arrayObject.push({i: i, q: x});
-                            }
-                        });
-                        let countRespView = p.vAns;
-                        arrayObject=this.shuffle(arrayObject);
-                        for(let i=0;i<countRespView;i++){
-                            arrayResp.push(arrayObject[i]);
-                        }
-                        arrayResp=this.shuffle(arrayResp);
-                        console.log(arrayResp);
                         return <Card key={index}>
                             <CardHeader title={p.pergunta}/>
                             <CardContent>
                                 <List>
-                                    {arrayResp.map((resp,idx)=>
-                                        <ListItem key={index+"r"+idx} button OnClick={()=>this.registraResp(resp.i)}>
+                                    {p.respostasView.map((resp,idx)=>{
+                                        console.log(idx);
+                                        console.log(this.state.selectAns[index]);
+                                        console.log(this.state.selectAns[index]===idx);
+                                        return <ListItem selected={this.state.selectAns[index]===idx} key={index+"r"+idx} button onClick={()=>this.registraResp(index,resp.i,idx)}>
                                             {resp.q}
-                                        </ListItem>)
+                                        </ListItem>})
                                     }
                                 </List>
                             </CardContent>
@@ -120,7 +123,7 @@ class Perguntas extends Component {
                     })
                     }
                     <Button type="submit"
-                            style={{marginTop: '20px', display: 'inline-block'}}>
+                            style={{marginTop: '20px', display: 'inline-block'}} onClick={()=>this.saveAns()}>
                         Responder
                     </Button>
                 </form>
